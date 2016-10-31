@@ -84,7 +84,7 @@ if (WIN32)
     )
     add_library(VkLayer_${target} SHARED ${ARGN} VkLayer_${target}.def)
     target_link_Libraries(VkLayer_${target} VkLayer_utils)
-    add_dependencies(VkLayer_${target} generate_dispatch_table_helper generate_vk_layer_helpers generate_enum_string_helper VkLayer_utils)
+    add_dependencies(VkLayer_${target} ${ARGN} generate_dispatch_table_helper generate_vk_layer_helpers generate_enum_string_helper VkLayer_utils)
     endmacro()
 else()
     macro(add_vk_layer target)
@@ -128,16 +128,7 @@ run_vk_helper(gen_struct_wrappers
     vk_struct_wrappers.h
     vk_struct_wrappers.cpp
     vk_safe_struct.h
-# Don't list vk_safe_struct.cpp as OUTPUT to avoid duplicate builds.
-# If listed here use of it for add_library will cause it to be created
-# independently of custom target generate_vk_layer_helpers .
-# That breaks parallel builds.
-#   vk_safe_struct.cpp
-)
-
-# Let gen_struct_wrappers really create vk_safe_struct.cpp
-add_custom_command(OUTPUT vk_safe_struct.cpp
-    COMMAND echo defer making vk_safe_struct.cpp
+    vk_safe_struct.cpp
 )
 
 set_source_files_properties(
